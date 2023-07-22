@@ -11,32 +11,52 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Implementación de los servicios de Ticket.
+ */
 @AllArgsConstructor
 @Service
 @Slf4j
 public class TicketServiceImpl implements TicketService {
 
+    /**
+     * Repositorio de tickets.
+     */
     @Autowired
     private TicketRepository ticketRepository;
 
+    /**
+     * Permite la conversión de un objeto a otro que tenga atributos en común.
+     */
     @Autowired
     private ModelMapper modelMapper;
 
+    /**
+     * Consulta de tickets.
+     *
+     * @param numeroPagina Numero de pagina
+     * @param tamanoPagina Tamaño de pagina
+     * @return Lista de tickets
+     */
     @Override
     public List<TicketDTO> getAllTickets(final Integer numeroPagina, final Integer tamanoPagina) {
-        log.info("Consulta de tickets de la pagina" + numeroPagina + " con un tamaño de pagina de " + tamanoPagina );
+        log.info("Consulta de tickets de la pagina" + numeroPagina + " con un tamaño de pagina de " + tamanoPagina);
         return ticketRepository.findAll(PageRequest.of(numeroPagina, tamanoPagina)).getContent()
                 .stream()
                 .map(ticketEntity -> modelMapper.map(ticketEntity, TicketDTO.class))
                 .toList();
     }
 
+    /**
+     * Creacion de tickets.
+     *
+     * @param ticketDTO Ticket a crear
+     * @return Ticket creado
+     */
     @Override
     public TicketDTO createTicket(final TicketDTO ticketDTO) {
         log.info("Creacion del ticket " + ticketDTO.getUsuario());
@@ -47,10 +67,16 @@ public class TicketServiceImpl implements TicketService {
                 + ticketDTO.getTicketId());
     }
 
+    /**
+     * Actualizacion de tickets.
+     *
+     * @param ticketDTO Ticket a actualizar
+     * @return Ticket actualizado
+     */
     @Override
     public TicketDTO updateTicket(final TicketDTO ticketDTO) {
         log.info("Actualizacion del ticket " + ticketDTO.getTicketId());
-        if (ticketDTO.getTicketId() != null){
+        if (ticketDTO.getTicketId() != null) {
             ticketRepository.findById(ticketDTO.getTicketId())
                     .orElseThrow(() -> new NotFoundException("No se ha encontrado el ticket: "
                             + ticketDTO.getTicketId()));
@@ -59,6 +85,12 @@ public class TicketServiceImpl implements TicketService {
         } else throw new BadRequestException("El id del ticket es obligatorio");
     }
 
+    /**
+     * Eliminacion de tickets.
+     *
+     * @param id Id del ticket a eliminar
+     * @return Booleano de confirmacion
+     */
     @Override
     public Boolean deleteTicket(final Integer id) {
         log.info("Eliminacion del ticket " + id);
@@ -68,7 +100,13 @@ public class TicketServiceImpl implements TicketService {
         return Boolean.TRUE;
     }
 
-    private Boolean validateTicket(TicketDTO ticketDTO){
+    /**
+     * Validacion de ticket.
+     *
+     * @param ticketDTO Ticket a validar
+     * @return Booleano de confirmacion
+     */
+    private Boolean validateTicket(TicketDTO ticketDTO) {
         return !ticketDTO.getUsuario().equals("")
                 && ticketDTO.getFechaCreacion() != null
                 && ticketDTO.getFechaActualizacion() != null;

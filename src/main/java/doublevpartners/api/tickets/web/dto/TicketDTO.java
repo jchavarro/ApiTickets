@@ -13,14 +13,29 @@ import java.util.Date;
 @Builder
 public class TicketDTO {
 
+    /**
+     * Id del ticket
+     */
     private Integer ticketId;
 
+    /**
+     * Nombre del usuario
+     */
     private String usuario;
 
+    /**
+     * Fecha de creacion del ticket
+     */
     private Date fechaCreacion;
 
+    /**
+     * Fecha de actualizacion del ticket
+     */
     private Date fechaActualizacion;
 
+    /**
+     * Estado del ticket
+     */
     private String status;
 
 }
